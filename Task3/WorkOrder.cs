@@ -15,19 +15,16 @@ namespace Task3
             CurrentStatus = cuurent_status;
         }
 
-        public bool canChangeStatus(Statuses wantedStatus)
+        public bool CanChangeStatus(Statuses wantedStatus)
         {
             switch(CurrentStatus)
             {
                 case Statuses.Draft:
-                    if (wantedStatus == Statuses.Active) return true;
-                    else return false;
+                    return (wantedStatus == Statuses.Active);
                 case Statuses.Active:
-                    if (wantedStatus == Statuses.InProgress || wantedStatus == Statuses.OnHold) return true;
-                    else return false;
+                    return (wantedStatus == Statuses.InProgress || wantedStatus == Statuses.OnHold);
                 case Statuses.OnHold:
-                    if (wantedStatus == Statuses.Active) return true;
-                    else return false;
+                    return (wantedStatus == Statuses.Active);
                 default:
                     return false;
             }

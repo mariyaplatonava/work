@@ -9,7 +9,7 @@ namespace Task3
             WorkOrder order = new WorkOrder(Statuses.Active);
             Statuses wantedStatus = Statuses.Draft;
 
-            if (order.canChangeStatus(wantedStatus))
+            if (order.CanChangeStatus(wantedStatus))
             {
                 Console.WriteLine($"Переход возможен. Статус заказа: {wantedStatus}");
             }

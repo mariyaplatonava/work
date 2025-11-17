@@ -17,9 +17,6 @@ namespace Task3
 
     public interface IStatusValidator
     {
-        public virtual bool CanChangeStatus(Statuses currentStatus, Statuses wantedStatus) 
-        {
-            return true;
-        }
+        public bool CanChangeStatus(Statuses wantedStatus);
     }
 }
