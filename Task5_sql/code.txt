@@ -1,0 +1,18 @@
+create table TaskQueue (
+  id int primary key not null,
+  taskName varchar(64) not null,
+  assignedTo int,
+  dueDate date not null,
+  isProcessed bit not null
+);
+
+insert into TaskQueue values (1, "Task1", null, '2025-11-20', 0);
+insert into TaskQueue values (2, "Task2", null, '2025-10-31', 1);
+insert into TaskQueue values (3, "Task3", null, '2025-11-24', 0);
+insert into TaskQueue values (4, "Task4", null, '2025-11-24', 1);
+insert into TaskQueue values (5, "Task5", null, '2025-11-25', 0);
+
+set @oldestDueDate = (select min(dueDate) from TaskQueue);
+update TaskQueue set assignedTo = 101, isProcessed = 1 where assignedTo = null and dueDate = @oldestDueDate;
+
+select * from TaskQueue where dueDate < current_date() and isProcessed = 0;
