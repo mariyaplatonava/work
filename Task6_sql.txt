@@ -6,28 +6,43 @@ create table Incident (
   ResolutionDate date
 );
 
-insert into Incident values (1, 'title1', 'Active', '2024-12-11', null);
+insert into Incident values (1, 'title1', 'Active', '2024-11-27', null);
 insert into Incident values (2, 'title2', 'Active', '2025-11-20', null);
-insert into Incident values (3, 'title3', 'Cancelled', '2025-11-22', '2025-11-23');
+insert into Incident values (3, 'title3', 'Cancelled', '2025-11-21', '2025-11-24');
 insert into Incident values (4, 'title4', 'Cancelled', '2025-11-07', null);
 insert into Incident values (5, 'title5', 'Cancelled', '2025-09-25', '2025-10-11');
 insert into Incident values (6, 'title6', 'Resolved', '2025-10-10', '2025-11-01');
 insert into Incident values (7, 'title7', 'Resolved', '2025-08-11', '2025-09-13');
+insert into Incident values (8, 'title8', 'Resolved', '2025-11-09', '2025-11-09');
+insert into Incident values (9, 'title9', 'Resolved', '2025-11-09', '2025-11-10');
 
 update Incident set Status = 'Resolved', ResolutionDate = current_date() 
 where Status = 'Active';
 select row_count();
 
-select Status, count(*), avg(datediff(ifnull(ResolutionDate, current_date()), CreatedOn)) as avgLifeTime
+select Status, count(*) as IncidentAmount, avg(datediff(ifnull(ResolutionDate, current_date()), CreatedOn)) as AvgLifeTime
 from Incident group by Status;
 
 delimiter //
-create procedure CountWorkDays(in start_date date, in end_date date)
-as
-begin
-  select datediff(ResolutionDate, CreatedOn)+1
-    - week(date_add(end_date, interval 2 day),3)- week(date_add(start_date, interval 1 day),3)
-    - week(date_add(end_date, interval 1 day),3) - week(start_date,3);
-end //
 
-select Title, CountWorkDays(start_date, end_date) from Incident where ResolutionDate is not null;
+-- вариант через подсчет недель между датами и умножением на 2 выходных
+create function CountWorkDays (start_date date, end_date date)
+returns int
+deterministic
+begin
+    if start_date = end_date then
+        return 0;
+    end if;
+    
+    set @total_days = datediff(end_date, start_date) + 1;
+    set @weekend_days = (
+        (datediff(end_date, start_date) / 7) * 2 +
+        (weekday(start_date) + datediff(end_date, start_date) % 7 >= 6)
+    );
+    
+    return @total_days - @weekend_days;
+end//
+
+delimiter ;
+
+select Title, CountWorkDays(CreatedOn, ResolutionDate) as WorkDays from Incident where ResolutionDate is not null;
